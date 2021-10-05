@@ -5,13 +5,19 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { Button, CardActionArea, CardActions } from "@mui/material";
+import { Button, CardActions } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import "./index.css";
 
 const Todo = () => {
   const [inputData, setInputData] = useState("");
   const [items, setItems] = useState([]);
+  
+  const handleChange = (e)=>{
+    if (e.keyCode === 13) {
+      addItem();
+    }
+  }
 
   const addItem = () => {
     if (!inputData) {
@@ -37,16 +43,16 @@ const Todo = () => {
   };
   return (
     <>
-      <Grid item xs={12} md={6} style={{ margin: "0 auto" }}>
-        <Card
+      <Grid item xs={12} md={6} className='main-container' style={{margin: "0 auto"}}>
+        <Card className="main-container"
           sx={{ maxWidth: 345 }}
           style={{
             margin: "0 auto",
-            borderRadius: "10px",
+            borderRadius: "20px",
             backgroundColor: "#F8F8FF",
           }}
         >
-          <CardActionArea>
+      
             <CardContent>
               <Typography
                 gutterBottom
@@ -62,6 +68,7 @@ const Todo = () => {
                   label="✍ Add Items..."
                   variant="standard"
                   value={inputData}
+                  onKeyDown={handleChange}
                   onChange={(e) => setInputData(e.target.value)}
                 />
                 <Button
@@ -74,11 +81,11 @@ const Todo = () => {
                   <AddIcon />
                 </Button>
               </Typography>
-              <Typography  variant="h6" component="div" style={{justifyContent:'space-between'}}>
+              <Typography >
                 {items.map((elem, id) => {
                   return (
                     <div key={id}>
-                      <h4>
+                      <h3 style={{display:"flex",justifyContent:"space-between"}}>
                         {elem}
                         <Button
                           size="small"
@@ -88,13 +95,13 @@ const Todo = () => {
                         >
                           <DeleteIcon />
                         </Button>
-                      </h4>
+                      </h3>
                     </div>
                   );
                 })}
               </Typography>
             </CardContent>
-          </CardActionArea>
+       
           <CardActions>
             <Button
               style={{ marginLeft: "25%" }}

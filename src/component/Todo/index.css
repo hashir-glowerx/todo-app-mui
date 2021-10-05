@@ -1,3 +1,14 @@
 body {
     background-color: hsla(89, 43%, 51%, 0.3);
   }
+
+  /* .main-container{
+    margin: auto;
+    background-color: hsla(0, 0%, 0%, 0.3);
+  }
+
+  .card-container{
+    margin: 0 auto;
+    border-radius: "10px";
+    background-color: "#F8F8FF";
+  } */
