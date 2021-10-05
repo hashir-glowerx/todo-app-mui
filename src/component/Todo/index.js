@@ -85,7 +85,7 @@ const Todo = () => {
 
           <CardActions>
             <Button style={{ marginLeft: "25%" }} size="small" variant="contained" color="success" onClick={() => removeAll()}>
-              CHECK LIST
+              RESET LIST
             </Button>
           </CardActions>
         </Card>
