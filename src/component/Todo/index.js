@@ -1,121 +1,105 @@
 import React, { useState } from "react";
-import TextField from "@mui/material/TextField";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
-import { Button, CardActions } from "@mui/material";
-import Grid from "@mui/material/Grid";
+import { Button, Card, Grid, IconButton, TextField, Typography } from "@mui/material";
+
+// Icons
+import { HighlightOff, DeleteOutlineOutlined } from "@mui/icons-material";
+
+// Constants
+import { ALERT_EMPTY_TODO, ALERT_DELET_TODO, ALERT_DELET_ALL_TODO } from "../../Constants";
+
+// Custom style
 import "./index.css";
 
 const Todo = () => {
   const [inputData, setInputData] = useState("");
   const [items, setItems] = useState([]);
-  
-  const handleChange = (e)=>{
+
+  const handleOnTextKeyDown = (e) => {
     if (e.keyCode === 13) {
       addItem();
     }
-  }
+  };
 
+  const handleOnTextChange = (targetValue) => {
+    setInputData(targetValue);
+  };
+
+  const renderTodoList = () => {
+    return items.length > 0 ? (
+      <Card className="card-full-width todo-list-container">
+        {items.map((elem, id) => {
+          return (
+            <div key={id} className="todo-item">
+              <span className="todo-item-text"> {elem}</span>
+              <IconButton size="small" variant="outlined" color="error" onClick={() => deleteItem(id)}>
+                <DeleteOutlineOutlined fontSize="small" />
+              </IconButton>
+            </div>
+          );
+        })}
+      </Card>
+    ) : (
+      <></>
+    );
+  };
+
+  const renderTodoListFooter = () => {
+    return items.length > 0 ? (
+      <Card className="card-full-width" style={{ textAlign: "center" }}>
+        <Button size="small" variant="outlined" color="error" onClick={() => removeAll()}>
+          <HighlightOff fontSize="small" /> &nbsp; RESET LIST
+        </Button>
+      </Card>
+    ) : (
+      <></>
+    );
+  };
+
+  // Capitalize first letter and add new input value in todo list
   const addItem = () => {
-    if (!inputData) {
-      alert("plzz fill data");
+    const trimValue = inputData.trim();
+    if (trimValue === "") {
+      alert(ALERT_EMPTY_TODO);
     } else {
-      setItems([...items, inputData]);
+      const newInputValue = trimValue.charAt(0).toUpperCase() + trimValue.slice(1);
+      setItems([...items, newInputValue]);
       setInputData("");
     }
   };
 
   // delete the items
   const deleteItem = (index) => {
-    const updateditems = items.filter((elem, ind) => {
-      return index !== ind;
-    });
+    // It will ask user to confirm delete action
+    if (window.confirm(ALERT_DELET_TODO)) {
+      const updateditems = items.filter((elem, ind) => {
+        return index !== ind;
+      });
 
-    setItems(updateditems);
+      setItems(updateditems);
+    }
   };
 
-  // remove all
+  // remove all items
   const removeAll = () => {
-    setItems([]);
+    if (window.confirm(ALERT_DELET_ALL_TODO)) setItems([]);
   };
+
   return (
-    <>
-      <Grid item xs={12} md={6} className='main-container' style={{margin: "0 auto"}}>
-        <Card className="main-container"
-          sx={{ maxWidth: 345 }}
-          style={{
-            margin: "0 auto",
-            borderRadius: "20px",
-            backgroundColor: "#F8F8FF",
-          }}
-        >
-      
-            <CardContent>
-              <Typography
-                gutterBottom
-                variant="h5"
-                component="div"
-                style={{ textAlign: "center" }}
-              >
-                Todo App
-              </Typography>
-              <Typography variant="h6" component="div">
-                <TextField
-                  id="standard-basic"
-                  label="✍ Add Items..."
-                  variant="standard"
-                  value={inputData}
-                  onKeyDown={handleChange}
-                  onChange={(e) => setInputData(e.target.value)}
-                />
-                <Button
-                  style={{ marginTop: "15px" }}
-                  size="medium"
-                  variant="contained"
-                  color="primary"
-                  onClick={() => addItem()}
-                >
-                  <AddIcon />
-                </Button>
-              </Typography>
-              <Typography >
-                {items.map((elem, id) => {
-                  return (
-                    <div key={id}>
-                      <h3 style={{display:"flex",justifyContent:"space-between"}}>
-                        {elem}
-                        <Button
-                          size="small"
-                          variant="contained"
-                          color="error"
-                          onClick={() => deleteItem(id)}
-                        >
-                          <DeleteIcon />
-                        </Button>
-                      </h3>
-                    </div>
-                  );
-                })}
-              </Typography>
-            </CardContent>
-       
-          <CardActions>
-            <Button
-              style={{ marginLeft: "25%" }}
-              size="small"
-              variant="contained"
-              color="success"
-              onClick={() => removeAll()}
-            >
-              CHECK LIST
-            </Button>
-          </CardActions>
-        </Card>
-      </Grid>
-    </>
+    <Grid item={true} id="main-container" container xs={10} sm={6} lg={4} style={{ margin: "0 auto" }}>
+      <Card className="card-full-width">
+        <Typography gutterBottom variant="h5" component="div" style={{ textAlign: "center" }}>
+          Your daily todo's
+        </Typography>
+        <Typography component="div">
+          <TextField fullWidth label="✍ Add Items..." variant="standard" value={inputData} onKeyDown={handleOnTextKeyDown} onChange={(e) => handleOnTextChange(e.target.value)} />
+          <small>
+            Press <em>Enter</em> to add your todo to list.
+          </small>
+        </Typography>
+      </Card>
+      {renderTodoList()}
+      {renderTodoListFooter()}
+    </Grid>
   );
 };
 
