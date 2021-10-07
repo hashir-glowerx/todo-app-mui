@@ -50,14 +50,13 @@ const Todo = () => {
 
   const handleOnChecked = (value) => {
     const newTodoList = items.map((elem) => {
-      if (elem.item === value) return { ...elem, checked: !elem.checked };
+      if (elem.id === value) return { ...elem, checked: !elem.checked };
       return elem;
     }).sort(function(a, b) {
       return a.checked -b.checked 
     });
     localStorage.setItem("lists", JSON.stringify(newTodoList));
     setItems(newTodoList);
-    console.log(newTodoList);
   };
   const handleOnTextSearch = (targetValue) => {
     searchItem(targetValue);
@@ -69,7 +68,7 @@ const Todo = () => {
   }, []);
 
   const renderTodoList = () => {
-    return items.length > 0 ? (
+    return getLocalItmes().length > 0 ? (
       <Card className="card-full-width todo-list-container">
         <TextField
           fullWidth
@@ -95,7 +94,7 @@ const Todo = () => {
                   type="checkbox"
                   checked={elem.checked}
                   onChange={() => {
-                    handleOnChecked(elem.item);
+                    handleOnChecked(elem.id);
                   }}
                 />
                     {" "}
@@ -145,11 +144,11 @@ const Todo = () => {
     } else {
       const newInputValue =
       trimValue.charAt(0).toUpperCase() + trimValue.slice(1);
-      const newInputValueArray = { item: newInputValue, checked: false };
-      setItems([...items, newInputValueArray]);
+      const newInputValueArray = { id:Math.random(),item: newInputValue, checked: false };
+      setItems([newInputValueArray,...items]);
       localStorage.setItem(
         "lists",
-        JSON.stringify([...items, newInputValueArray]),
+        JSON.stringify([newInputValueArray,...items]),
       );
       setInputData("");
     }
