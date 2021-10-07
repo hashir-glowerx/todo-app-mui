@@ -23,6 +23,16 @@ import {
 import "./index.css";
 
 const Todo = () => {
+
+  const [inputData, setInputData] = useState("");
+  const [searchData, setSearchData] = useState("");
+  const [items, setItems] = useState([]);
+
+  const handleOnTextKeyDown = (e) => {
+    if (e.keyCode === 13) {
+      addItem();
+    }
+  };
   // to get the data from LS
   const getLocalItmes = () => {
     let list = localStorage.getItem("lists");
@@ -34,18 +44,20 @@ const Todo = () => {
     }
   };
 
-  const [inputData, setInputData] = useState("");
-  const [searchData, setSearchData] = useState("");
-  const [items, setItems] = useState([]);
-
-  const handleOnTextKeyDown = (e) => {
-    if (e.keyCode === 13) {
-      addItem();
-    }
-  };
-
   const handleOnTextChange = (targetValue) => {
     setInputData(targetValue);
+  };
+
+  const handleOnChecked = (value) => {
+    const newTodoList = items.map((elem) => {
+      if (elem.item === value) return { ...elem, checked: !elem.checked };
+      return elem;
+    }).sort(function(a, b) {
+      return a.checked -b.checked 
+    });
+    localStorage.setItem("lists", JSON.stringify(newTodoList));
+    setItems(newTodoList);
+    console.log(newTodoList);
   };
   const handleOnTextSearch = (targetValue) => {
     searchItem(targetValue);
@@ -54,7 +66,7 @@ const Todo = () => {
 
   useEffect(() => {
     setItems(getLocalItmes());
-  }, [])
+  }, []);
 
   const renderTodoList = () => {
     return items.length > 0 ? (
@@ -71,8 +83,24 @@ const Todo = () => {
           return (
             <>
               <div key={id} className="todo-item">
-                <Tooltip title={elem}>
-                  <span className="todo-item-text"> {elem}</span>
+              
+                <Tooltip title={elem.item}>
+                  <span
+                    style={
+                      elem.checked ? { textDecoration: "line-through" } : null
+                    }
+                    className="todo-item-text"
+                  >
+                    <input
+                  type="checkbox"
+                  checked={elem.checked}
+                  onChange={() => {
+                    handleOnChecked(elem.item);
+                  }}
+                />
+                    {" "}
+                    {elem.item}
+                  </span>
                 </Tooltip>
                 <IconButton
                   size="small"
@@ -116,9 +144,13 @@ const Todo = () => {
       alert(ALERT_EMPTY_TODO);
     } else {
       const newInputValue =
-        trimValue.charAt(0).toUpperCase() + trimValue.slice(1);
-      setItems([...items, newInputValue]);
-      localStorage.setItem("lists", JSON.stringify([...items, newInputValue]));
+      trimValue.charAt(0).toUpperCase() + trimValue.slice(1);
+      const newInputValueArray = { item: newInputValue, checked: false };
+      setItems([...items, newInputValueArray]);
+      localStorage.setItem(
+        "lists",
+        JSON.stringify([...items, newInputValueArray]),
+      );
       setInputData("");
     }
   };
@@ -131,13 +163,17 @@ const Todo = () => {
         return index !== ind;
       });
 
+      localStorage.setItem("lists", JSON.stringify(updateditems));
       setItems(updateditems);
     }
   };
 
   // remove all items
   const removeAll = () => {
-    if (window.confirm(ALERT_DELET_ALL_TODO)) setItems([]);
+    if (window.confirm(ALERT_DELET_ALL_TODO)) {
+      setItems([]);
+      localStorage.setItem("lists", JSON.stringify([]));
+    }
   };
 
   // search items
@@ -147,7 +183,7 @@ const Todo = () => {
       return;
     }
     const searchItems = items.filter((elem, ind) => {
-      return elem.toLowerCase().includes(value.trim());
+      return elem.item.toLowerCase().includes(value.trim());
     });
 
     setItems(searchItems);

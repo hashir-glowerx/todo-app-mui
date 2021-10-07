@@ -19,7 +19,7 @@
 
 .todo-item {
   display: flex;
-  justify-content: space-between;
+  justify-content:space-between;
   padding: 0.4rem 0rem;
   border-bottom: 1px solid #E8E8E8;
 }
